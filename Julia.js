@@ -1,4 +1,9 @@
 // Maximum number of iterations for each point on the complex plane
+let video;
+let poseNet;
+let poses = [];
+let pose;
+
 const MAX_ITERATIONS = 32;
 
 let cnv_mandel;
@@ -30,6 +35,19 @@ function setup() {
   // cnv_mandel = createGraphics(1280, 480);
   cnv_julia = createGraphics(1280, 480);
   colorMode(HSB); 
+
+  video = createCapture(VIDEO);
+  video.size(width, height);
+
+  // Create a new poseNet method with a single detection
+  poseNet = ml5.poseNet(video, modelReady);
+  // This sets up an event that fills the global variable "poses"
+  // with an array every time new poses are detected
+  poseNet.on("pose", function(results) {
+    poses = results;
+  });
+  // Hide the video element, and just show the canvas
+  // video.hide();
   
   // updateMandel();
   
@@ -39,13 +57,42 @@ const handleDouble = () => {
   spacePressed=!spacePressed;
 }
 
+function modelReady() {
+  select("#status").html("Model Loaded");
+}
+
 function draw() {
   // image(cnv_mandel,0,0);
   updateJulia();
   image(cnv_julia,0,0);
   pause();
   // image(cnv_julia,0,0);
+  drawKeypoints();
 }
+
+// A function to draw ellipses over the detected keypoints
+function drawKeypoints() {
+  // Loop through all the poses detected
+  for (let i = 0; i < poses.length; i += 1) {
+    // For each pose detected, loop through all the keypoints
+    const pose = poses[i].pose;
+    // const pose = poses[i].pose['leftWrist'];
+    // const leftWrist = poses[i].pose['leftWrist'];
+    // const pose = poses[i].pose['leftWrist'];
+    for (let j = 0; j < pose.keypoints.length; j += 1) {
+      // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+      const keypoint = pose.keypoints[j];
+      // Only draw an ellipse is the pose probability is bigger than 0.2
+      if (keypoint.score > 0.2) {
+        fill(255, 0, 0);
+        noStroke();
+        ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
+        // console.log(keypoint.position.x, keypoint.position.y)
+      }
+    }
+  }
+}
+
 let zoom = 4;
 
 function mouseWheel(e) {
@@ -58,8 +105,10 @@ function mouseWheel(e) {
 
 const pause = () => {
   if (spacePressed === true) {
-    mouseXThing = mouseX, mouseYThing = mouseY, console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), spacedPressed = false
+    mouseXThing = poses[0].pose.keypoints[9].position.x, mouseYThing = poses[0].pose.keypoints[9].position.y, console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), spacedPressed = false
     return;
+    // mouseXThing = mouseX, mouseYThing = mouseY, console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), spacedPressed = false
+    // return;
   }
 
 }
@@ -73,8 +122,10 @@ function updateJulia() {
     ca = map(mouseXThing, 0, cnv_julia.width, -2, 1);
     cb = map(mouseYThing%cnv_julia.height, 0, cnv_julia.height, -1, 1);
    } else {
-    ca = map(mouseX, 0, cnv_julia.width, -2, 1);
-    cb = map(mouseY%cnv_julia.height, 0, cnv_julia.height, -1, 1);
+    ca = map(poses[0].pose.keypoints[9].position.x, 0, cnv_julia.width, -2, 1);
+    cb = map(poses[0].pose.keypoints[9].position.y%cnv_julia.height, 0, cnv_julia.height, -1, 1);
+    // ca = map(mouseX, 0, cnv_julia.width, -2, 1);
+    // cb = map(mouseY%cnv_julia.height, 0, cnv_julia.height, -1, 1);
    }
   
   prev_ca = ca; 
