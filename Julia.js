@@ -23,7 +23,8 @@ function onKeyPress(event) {
 
 function setup() {
   pixelDensity(1);
-  createCanvas(1280,480);
+  cnv = createCanvas(1280,480);
+  cnv.doubleClicked(handleDouble);
   
   // cnv_mandel = createGraphics(1280, 480);
   cnv_julia = createGraphics(1280, 480);
@@ -31,6 +32,10 @@ function setup() {
   
   // updateMandel();
   
+}
+
+const handleDouble = () => {
+  spacePressed=!spacePressed;
 }
 
 function draw() {
