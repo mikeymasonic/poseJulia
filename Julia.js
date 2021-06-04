@@ -27,7 +27,7 @@ function setup() {
   
   // cnv_mandel = createGraphics(1280, 480);
   cnv_julia = createGraphics(1280, 480);
-  colorMode(HSB);
+  colorMode(HSB); 
   
   // updateMandel();
   
