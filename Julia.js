@@ -25,6 +25,7 @@ function setup() {
   pixelDensity(1);
   cnv = createCanvas(1280,480);
   cnv.doubleClicked(handleDouble);
+  cnv.touchStarted(handleDouble);
   
   // cnv_mandel = createGraphics(1280, 480);
   cnv_julia = createGraphics(1280, 480);
