@@ -47,7 +47,7 @@ function setup() {
     poses = results;
   });
   // Hide the video element, and just show the canvas
-  // video.hide();
+  video.hide();
   
   // updateMandel();
   
@@ -55,6 +55,7 @@ function setup() {
 
 const handleDouble = () => {
   spacePressed=!spacePressed;
+  console.log(poses[0].pose);
 }
 
 function modelReady() {
@@ -67,7 +68,9 @@ function draw() {
   image(cnv_julia,0,0);
   pause();
   // image(cnv_julia,0,0);
+  // translate(width / 2, height / 2);
   drawKeypoints();
+
 }
 
 // A function to draw ellipses over the detected keypoints
@@ -104,8 +107,11 @@ function mouseWheel(e) {
 }
 
 const pause = () => {
-  if (spacePressed === true) {
-    mouseXThing = poses[0].pose.keypoints[9].position.x, mouseYThing = poses[0].pose.keypoints[9].position.y, console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), spacedPressed = false
+  if (spacePressed === true && poses) {
+    mouseXThing = poses[0].pose.keypoints[0].position.x, 
+    mouseYThing = poses[0].pose.keypoints[0].position.y, 
+    // console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), 
+    spacedPressed = false
     return;
     // mouseXThing = mouseX, mouseYThing = mouseY, console.log('mouseXThing: ', mouseXThing, 'mouseYThing: ', mouseYThing), spacedPressed = false
     // return;
